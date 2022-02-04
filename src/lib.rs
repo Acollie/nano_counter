@@ -78,12 +78,6 @@ impl WordCount <'static>{
             }
             
         }
-        println!("-----");
-        for x in  self.hashset_into_vec(){
-            println!("{:?}",x.key);
-            println!("{:?}",x.count);
-        }
-        println!("-----");
 
         
         // let sorted_keys = words.sort_by(|a,b| b.count.cmp(&a.count));
@@ -197,6 +191,26 @@ mod tests {
         assert_eq!(results,"Test2");
     }
 
+    #[test]
+    fn hashset_into_vector() {
+        let mut words = WordCount{
+            words: Default::default()
+        };
+        words.add_word("Test");
+        words.add_word("Test");
+        words.add_word("Test1");
+        words.add_word("Test1");
+        words.add_word("Test1");
+
+        let result = words.hashset_into_vec();
+        let correct_answer = vec![Word{ key: "Test", count: 2 }, Word{ key: "Test1", count: 3 }];
+
+        assert_eq!(result[0].key,correct_answer[0].key);
+        assert_eq!(result[0].count,correct_answer[0].count);
+
+        assert_eq!(result[1].key,correct_answer[1].key);
+        assert_eq!(result[1].count,correct_answer[1].count);
+    }
     #[test]
     fn find_smallest_in_hashset_harder(){
         let mut words = WordCount{
