@@ -1,4 +1,5 @@
-use std::collections::{HashMap};
+use std::any::Any;
+use std::collections::{HashMap, HashSet};
 
 struct Word<'a>{
     key: &'a str,
@@ -32,22 +33,83 @@ impl WordCount <'static>{
     fn remove_word(&mut self,key:&str){
         self.words.remove(key);
     }
-    fn most_common_words(&self) ->Vec<Word>{
+    fn count_words(&self)->i32{
 
-        let mut most_common_words :Vec<Word>= Vec::new();
+        return (self.words.len() as i32) + 1;
+    }
 
-        let foo = &self.words;
-        println!("{:?}",self.words.get("foo").unwrap().key);
+    fn hashset_into_vec(&self) -> Vec<Word>{
+        let mut vec:Vec<Word> = Vec::new();
+
+        for key in self.words.keys(){
+            let mut word= self.words.get(key).unwrap();
+
+            let mut word_struct = Word{
+                key: word.key,
+                count: word.count
+            };
+            vec.append(&mut vec![word_struct]);
+
+        }
+        return vec;
+    }
+
+    fn most_common_words(&self,n :i32) -> Vec<Word> {
+
+        let mut most_common_words :HashMap<&str,i32>= HashMap::new();
+        let mut min_most_common = std::i32::MAX;
+
+        for key in self.words.keys(){
+            let value:i32 = self.words.get(key).unwrap().count;
+
+            
+            if value > min_most_common || most_common_words.len() as i32 <=n {
+
+                let current_smallest = self.smallest_in_set(n);
+                let current_smallest_value = self.words.get(current_smallest).unwrap();
+
+                if value<min_most_common{
+                    min_most_common = value;
+                }
+                if value > min_most_common{
+
+                }
+                most_common_words.insert(key, value);
+            }
+            
+        }
+        println!("-----");
+        for x in  self.hashset_into_vec(){
+            println!("{:?}",x.key);
+            println!("{:?}",x.count);
+        }
+        println!("-----");
+
+        
         // let sorted_keys = words.sort_by(|a,b| b.count.cmp(&a.count));
-
-        // for key in &self.words.keys(){
-        //     println!("")
-        // };
         return vec![]
     }
+    fn smallest_in_set(&self, size: i32)->&str{
+        let mut smallest = 0;
+        let mut smallest_string = "";
+        let mut seen_largest :HashSet<&str> = HashSet::new();
+
+        for key in self.words.keys(){
+            let value = self.words.get(key).unwrap().count;
+
+            if value > smallest && !seen_largest.contains(key) || (seen_largest.len() as i32) < size{
+                smallest = value;
+                smallest_string = key;
+
+            }
+            if value > smallest {
+                seen_largest.insert(key);
+            }
+
+        }
+        return smallest_string;
+    }
 }
-
-
 #[cfg(test)]
 mod tests {
     use crate::*;
@@ -60,7 +122,6 @@ mod tests {
         words.add_word("Test");
         assert_eq!(words.get_word_count("Test"), 1);
     }
-
     #[test]
     fn add_word_count() {
         let mut words = WordCount{
@@ -71,7 +132,6 @@ mod tests {
         words.add_word("Test");
         assert_eq!(words.get_word_count("Test"), 2);
     }
-
     #[test]
     fn remove_word() {
         let mut words = WordCount{
@@ -79,16 +139,91 @@ mod tests {
         };
         words.add_word("Test");
         words.remove_word("Test");
-        println!("----->{}",words.get_word_count("Test"));
+
         assert_eq!(words.get_word_count("Test"), 0);
     }
     #[test]
     fn count_words(){
-        assert_eq!(14, 14);
+        let mut words = WordCount{
+            words: Default::default()
+        };
+        words.add_word("Test");
+        words.add_word("Test1");
+        words.add_word("Test");
+        assert_eq!(words.count_words(), 3);
     }
     #[test]
     fn most_common_words(){
+        let mut words = WordCount{
+            words: Default::default()
+        };
+        words.add_word("Test");
+        words.add_word("Test");
+        words.add_word("Test");
+        words.add_word("Test1");
+        words.add_word("Test1");
+        words.add_word("Test2");
+        words.add_word("Test3");
+        words.add_word("Test4");
+        words.add_word("Test5");
+        words.add_word("Test6");
+
+        let results = words.most_common_words(2);        
+        let expect:Vec<Word> = Vec::new();
+        // assert_eq!(results,expect);
         assert_eq!(1,1);
     }
+    #[test]
+    fn find_smallest_in_hashset_basic(){
+        let mut words = WordCount{
+            words: Default::default()
+        };
+        words.add_word("Test");
+        words.add_word("Test");
+        words.add_word("Test");
+        words.add_word("Test1");
+        words.add_word("Test1");
+        words.add_word("Test1");
+        words.add_word("Test2");
+        words.add_word("Test2");
+        words.add_word("Test3");
+        words.add_word("Test4");
+        words.add_word("Test5");
+        words.add_word("Test6");
 
+        let results = words.smallest_in_set(2);        
+        let expect:Vec<Word> = Vec::new();
+        // assert_eq!(results,expect);
+        assert_eq!(results,"Test2");
+    }
+
+    #[test]
+    fn find_smallest_in_hashset_harder(){
+        let mut words = WordCount{
+            words: Default::default()
+        };
+        words.add_word("Test");
+        words.add_word("Test");
+        words.add_word("Test");
+        words.add_word("Test1");
+        words.add_word("Test1");
+        words.add_word("Test1");
+        words.add_word("Test2");
+        words.add_word("Test2");
+        words.add_word("Test3");
+        words.add_word("Test3");
+        words.add_word("Test3");
+        words.add_word("Test4");
+        words.add_word("Test4");
+        words.add_word("Test4");
+        words.add_word("Test4");
+        words.add_word("Test4");
+        words.add_word("Test5");
+        words.add_word("Test6");
+
+        let results = words.smallest_in_set(2);
+        let expect:Vec<Word> = Vec::new();
+        // assert_eq!(results,expect);
+        assert_eq!(results,"Test3");
+    }
 }
