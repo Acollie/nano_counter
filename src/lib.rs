@@ -6,15 +6,15 @@ pub struct Counter<T>{
 }
 
 impl<T:std::cmp::PartialEq + std::cmp::Eq + std::hash::Hash> Counter<T>{
-    fn new() -> Counter<T>{
+    pub fn new() -> Counter<T>{
         Counter{
             items: Vec::new(),
         }
     }
-    fn add(&mut self, item: T){
+    pub fn add(&mut self, item: T){
         self.items.push(item);
     }
-    fn remove_item(&mut self, item: T){
+    pub fn remove_item(&mut self, item: T){
         let index = self.items.iter().position(|x| *x == item);
         match index {
             Some(i) => {
@@ -24,13 +24,13 @@ impl<T:std::cmp::PartialEq + std::cmp::Eq + std::hash::Hash> Counter<T>{
         }
     }
 
-    fn count(&self) -> usize{
+    pub fn count(&self) -> usize{
         self.items.len()
     }
-    fn count_item(&self, item: T) -> usize{
+    pub fn count_item(&self, item: T) -> usize{
         self.items.iter().filter(|x| **x == item).count()
     }
-    fn count_most_common(&self) -> Option<&T>{
+    pub fn count_most_common(&self) -> Option<&T>{
         let mut map = HashMap::new();
         for item in &self.items{
             let count = map.entry(item).or_insert(0);
