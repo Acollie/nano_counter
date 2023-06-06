@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-struct Counter<T>{
+pub struct Counter<T>{
     items: Vec<T>,
 
 }
